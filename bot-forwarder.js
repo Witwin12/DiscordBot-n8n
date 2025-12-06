@@ -27,6 +27,8 @@ client.on('interactionCreate', async interaction => {
 
   if (interaction.commandName === 'askbot') {
 
+    await interaction.deferReply();
+
     const prompt = interaction.options.getString('prompt');
 
     const payload = {
@@ -38,17 +40,18 @@ client.on('interactionCreate', async interaction => {
       serverId: interaction.guild ? interaction.guild.id : 'DM',
     };
 
-    try {
+  try {
       await fetch(N8N_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      await interaction.reply(`ส่งข้อความไปยัง AI แล้ว: **${prompt}**`);
+  await interaction.deleteReply();
+
     } catch (err) {
       console.error(err);
-      await interaction.reply('เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง n8n');
+      await interaction.deleteReply();
     }
   }
 });
