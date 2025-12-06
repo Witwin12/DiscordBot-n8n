@@ -2,7 +2,6 @@
   "name": "bot-discord-n8n",
   "version": "1.0.0",
   "main": "index.js",
-  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +11,8 @@
   "description": "",
   "type": "module",
   "dependencies": {
+    "@discordjs/rest": "^2.6.0",
+    "discord-api-types": "^0.38.36",
     "discord.js": "^14.25.1",
     "node-fetch": "^3.3.2"
   }

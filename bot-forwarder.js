@@ -4,44 +4,52 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const N8N_WEBHOOK = process.env.N8N_WEBHOOK; 
+const N8N_WEBHOOK = process.env.N8N_WEBHOOK;
+
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
-client.on('ready', () => {
-  console.log('Bot ready as', client.user.tag);
+client.once('ready', () => {
+  console.log(`Bot logged in as ${client.user.tag}`);
 });
 
-client.on('messageCreate', async (message) => {
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
 
-  if (message.author.bot) return;
+  if (interaction.commandName === 'help') {
+    return interaction.reply(
+      "📌 **คำสั่งทั้งหมด**\n" +
+      "• `/askbot <prompt>` – ส่งข้อความไป n8n\n" +
+      "• `/help` – แสดงรายการคำสั่ง\n"
+    );
+  }
 
-  const prefix = '!askbot ';
-  if (!message.content.startsWith(prefix)) return;
+  if (interaction.commandName === 'askbot') {
 
-  const prompt = message.content.slice(prefix.length);
+    const prompt = interaction.options.getString('prompt');
 
-  const guildId = message.guild ? message.guild.id : 'DM';
+    const payload = {
+      userId: interaction.user.id,
+      username: interaction.user.username,
+      channelId: interaction.channel.id,
+      prompt,
+      rawMessage: prompt,
+      serverId: interaction.guild ? interaction.guild.id : 'DM',
+    };
 
-  const payload = {
-    userId: message.author.id,
-    username: message.author.username,
-    channelId: message.channel.id,
-    prompt,
-    rawMessage: message.content,
-    serverId: guildId,
-  };
+    try {
+      await fetch(N8N_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-  try {
-    await fetch(N8N_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    console.log('Forwarded prompt to n8n:', prompt);
-  } catch (err) {
-    console.error('Failed to forward to n8n', err);
+      await interaction.reply(`ส่งข้อความไปยัง AI แล้ว: **${prompt}**`);
+    } catch (err) {
+      console.error(err);
+      await interaction.reply('เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง n8n');
+    }
   }
 });
 
