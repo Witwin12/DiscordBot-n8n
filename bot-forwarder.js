@@ -21,12 +21,16 @@ client.on('messageCreate', async (message) => {
   if (!message.content.startsWith(prefix)) return;
 
   const prompt = message.content.slice(prefix.length);
+
+  const guildId = message.guild ? message.guild.id : 'DM';
+
   const payload = {
     userId: message.author.id,
     username: message.author.username,
     channelId: message.channel.id,
     prompt,
     rawMessage: message.content,
+    serverId: guildId,
   };
 
   try {
