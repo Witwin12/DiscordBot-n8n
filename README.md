@@ -109,3 +109,8 @@ N8N_RUNNERS_ENABLED=true
 DISCORD_TOKEN=your_bot_token_here
 APPLICATION_ID=your_app_id_here
 N8N_WEBHOOK=your_full_webhook_url
+```
+## การ run bot
+ใช้คำสั่ง
+```cmd
+node .\bot-forwarder.js   
