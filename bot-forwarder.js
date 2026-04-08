@@ -10,7 +10,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
-client.once('ready', () => {
+client.once('clientReady', () => {
   console.log(`Bot logged in as ${client.user.tag}`);
 });
 
@@ -21,14 +21,13 @@ client.on('interactionCreate', async interaction => {
     return interaction.reply(
       "📌 **คำสั่งทั้งหมด**\n" +
       "• `/askbot <prompt>` – ส่งข้อความไป n8n\n" +
-      "• `/help` – แสดงรายการคำสั่ง\n"
+      "• `/help` – แสดงรายการคำสั่ง\n" +
+      "• `/roll` – สุ่มตัวเลข 1-10\n"
     );
   }
 
-  if (interaction.commandName === 'askbot') {
-
+if (interaction.commandName === 'askbot') {
     await interaction.deferReply();
-
     const prompt = interaction.options.getString('prompt');
 
     const payload = {
@@ -40,19 +39,24 @@ client.on('interactionCreate', async interaction => {
       serverId: interaction.guild ? interaction.guild.id : 'DM',
     };
 
-  try {
+    try {
       await fetch(N8N_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-  await interaction.deleteReply();
+      await interaction.editReply(`ส่งข้อมูลไปที่ n8n เรียบร้อยแล้ว: "${prompt}"`);
 
     } catch (err) {
       console.error(err);
-      await interaction.deleteReply();
+      await interaction.editReply(" เกิดข้อผิดพลาดในการเชื่อมต่อกับ n8n");
     }
+  }
+
+  if (interaction.commandName === 'roll') {
+    const random_output = Math.floor(Math.random() * 10) + 1;
+    return interaction.reply(random_output.toString());
   }
 });
 

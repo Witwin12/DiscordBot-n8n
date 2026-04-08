@@ -18,7 +18,11 @@ const commands = [
   {
     name: 'help',
     description: 'แสดงคำสั่งทั้งหมด'
-  }
+  },
+  {
+    name: 'roll',
+    description: 'สุ่มตัวเลข 1-10',
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
