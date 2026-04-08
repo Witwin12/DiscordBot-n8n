@@ -1,0 +1,156 @@
+{
+  "name": "Discord-bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b9e9f70f-cf2d-44c3-9646-487f2f434389",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        0
+      ],
+      "id": "aa68d74f-5ec4-4aaa-8d49-f57e91a1c39a",
+      "name": "Webhook",
+      "webhookId": "b9e9f70f-cf2d-44c3-9646-487f2f434389",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "id"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.body.prompt }}+ให้ตอบกลับด้วยภาษาที่สั้นๆง่ายๆเสมือนเพื่อนรักที่คบกันมานานให้ตอบกลับเป็นภาษาไทย และจำกัดความยาวข้อความให้อยู่ไม่เกิน 1000 ตัวอักษร"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "fd16bb0b-c645-455e-9471-d6a44fc1a246",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bn9y5guSh087jNgB",
+          "name": "Google Gemini(PaLM) API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.serverId }}",
+          "mode": "id"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $('Webhook').item.json.body.channelId }}",
+          "mode": "id"
+        },
+        "content": "={{ $json.discord_message }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "52bceeec-4942-4d17-b6cc-83dba57350e4",
+      "name": "Send a message",
+      "webhookId": "f130989e-0170-417d-b94d-69922187a58b",
+      "credentials": {
+        "discordBotApi": {
+          "id": "EHp8oMmC13V8U1is",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e4bf1758-0df7-4baf-8e83-5ef6cb00f5a4",
+              "name": "discord_message",
+              "value": "={{ $json.content.parts[0].text.replace(/\\n/g, ' ') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        0
+      ],
+      "id": "8f1ffecd-32ce-4fce-8b75-244e4255bdaf",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1a30d23c-2eb8-4a76-a9f1-065eb7ea3a64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "72cdaeb9c33084c64f119054423117ef0f3bb79edcff89f900aca5f7b657d2fd"
+  },
+  "id": "rh2IYMvLoB0F6Sdv",
+  "tags": []
+}
