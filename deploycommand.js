@@ -23,6 +23,19 @@ const commands = [
     name: 'roll',
     description: 'สุ่มตัวเลข 1-10',
   },
+  {
+    name: 'play',
+    description: 'เล่นเพลง',
+    options: [
+      {
+        name: 'query', // เปลี่ยนให้จำง่าย
+        description: 'ชื่อเพลงหรือลิงก์ YouTube',
+        type: 3, 
+        required: true,
+      }
+    ]
+  },
+  
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
