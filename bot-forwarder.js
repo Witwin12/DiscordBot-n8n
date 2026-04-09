@@ -114,12 +114,30 @@ async function handlePlay(interaction) {
     return interaction.editReply(`❌ เล่นไม่ได้จ้า: ${error.message}`);
   }
 }
+async function handleSkip(interaction) {
+  await interaction.deferReply();
+  const queue = player.nodes.get(interaction.guildId);
+  if (!queue || !queue.isPlaying()) {
+        return interaction.editReply('❌ ไม่มีเพลงกำลังเล่นอยู่จ้า จะให้ข้ามอะไรเอ่ย?');
+    }
+
+    if (interaction.member.voice.channelId !== queue.channel.id) {
+        return interaction.editReply('❌ ต้องอยู่ห้องเสียงเดียวกับบอทถึงจะข้ามได้นะ!');
+    }
+
+    const currentTrack = queue.currentTrack; 
+    
+    queue.node.skip();
+
+    return interaction.editReply(`⏭️ ข้ามเพลง **${currentTrack.title}** ให้แล้วจ้า!`);
+}
 
 const commandHandlers = {
   help: replyHelp,
   askbot: handleAskbot,
   roll: handleRoll,
   play: handlePlay,
+  skip: handleSkip,
 };
 
 client.once('ready', async () => {

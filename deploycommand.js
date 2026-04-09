@@ -35,7 +35,10 @@ const commands = [
       }
     ]
   },
-  
+  {
+        name: 'skip',
+        description: 'ข้ามเพลงที่กำลังเล่นอยู่',
+  },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
