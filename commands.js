@@ -61,7 +61,8 @@ export const handlePlay = async (interaction, { player }) => {
   }
 
   const isUrl = query.startsWith('http');
-  const searchEngine = isUrl ? 'auto' : 'soundcloudSearch';
+  // Use YouTube search by default if not a URL, as we now have YouTubei support
+  const searchEngine = isUrl ? 'auto' : 'youtube';
 
   try {
     const { track } = await player.play(voiceChannel, query, {
@@ -77,11 +78,6 @@ export const handlePlay = async (interaction, { player }) => {
     return interaction.editReply(`🎶 เพิ่มเพลง **${track.title}** เข้าคิวแล้ว!`);
   } catch (error) {
     console.error('❌ play error:', error);
-
-    if (query.includes('youtube.com') || query.includes('youtu.be')) {
-      return interaction.editReply('❌ YouTube บล็อกการดึงเสียงครับ แนะนำให้พิมพ์แค่ **ชื่อเพลง** แทนการแปะลิงก์นะครับ');
-    }
-
     return interaction.editReply(`❌ เล่นไม่ได้จ้า: ${error.message}`);
   }
 };

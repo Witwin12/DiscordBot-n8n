@@ -1,5 +1,6 @@
 import { Player } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
+import { YoutubeiExtractor } from 'discord-player-youtubei';
 import ffmpegStatic from 'ffmpeg-static';
 
 const DEFAULT_FFMPEG_PATH = ffmpegStatic;
@@ -36,6 +37,15 @@ export async function setupPlayer(client) {
   configureFfmpeg();
 
   const player = new Player(client);
+  
+  // Register YouTubeiExtractor before loading other extractors
+  await player.extractors.register(YoutubeiExtractor, {
+    streamOptions: {
+      useClient: 'ANDROID_VR',
+      highWaterMark: 1 << 25
+    }
+  });
+
   await player.extractors.loadMulti(DefaultExtractors);
 
   registerPlayerEvents(player);
