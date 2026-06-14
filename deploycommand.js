@@ -1,6 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import dotenv from 'dotenv';
-dotenv.config();
+import { config } from './config.js';
 
 const commands = [
   {
@@ -39,15 +38,19 @@ const commands = [
         name: 'skip',
         description: 'ข้ามเพลงที่กำลังเล่นอยู่',
   },
+  {
+    name: 'queue',
+    description: 'แสดงคิวเพลงปัจจุบัน',
+  },
 ];
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(config.discordToken);
 
 (async () => {
   try {
     console.log('Registering slash commands...');
     await rest.put(
-      Routes.applicationCommands(process.env.APPLICATION_ID),
+      Routes.applicationCommands(config.applicationId),
       { body: commands }
     );
     console.log('Slash commands registered!');
